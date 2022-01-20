@@ -44,7 +44,7 @@ def main(input_text):
     def iikiri_check(text):
         """末尾が言い切りの形か"""
         iikiri = ["だ", "だろ", "です", "ます", "ある",
-                  "た", "る", "が", "か", "く"]
+                  "た", "る", "が", "か", "く", "せん","ない"]
         for word in iikiri:
             if text.endswith(word):
                 return True
@@ -74,8 +74,8 @@ if __name__ == "__main__":
     input_text = sys.argv[1]
     output_text = main(input_text)
 
-    print("入力文")
+    print("<入力文>")
     print(input_text)
     print()
-    print("出力文")
+    print("<出力結果>")
     print(output_text)
