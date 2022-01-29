@@ -31,6 +31,9 @@ def main(input_text):
                 (mecab_word[-2] == "ナイ" and mecab_word[1] == "形容詞"):
             # 否定形の「ぬ」を「にゃい」に変換
             output_text += "にゃいにゃ"
+        elif mecab_word[-2] in {"ネコ"}:
+            # ネコをにゃんに変換
+            output_text += "にゃん"
         # 猫語辞書に入っているか and 名詞か
         elif neko_check(mecab_word[-2], neko_dict) and mecab_word[1] in {"名詞", "助動詞", "形容詞", "動詞"}:
             # ニャ変換
@@ -44,7 +47,7 @@ def main(input_text):
     def iikiri_check(text):
         """末尾が言い切りの形か"""
         iikiri = ["だ", "だろ", "です", "ます", "ある",
-                  "た", "る", "が", "か", "く", "せん","ない"]
+                  "た", "る", "が", "か", "く", "せん", "ない"]
         for word in iikiri:
             if text.endswith(word):
                 return True
