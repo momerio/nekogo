@@ -1,16 +1,14 @@
+# -*- encoding: utf-8 -*-
+
 import re
-import MeCab
+import MeCabUse
 import sys
 
 
 def main(input_text):
 
     # 品詞,品詞細分類1,品詞細分類2,品詞細分類3,活用形,活用型,原形,読み,発音
-    mecab = MeCab.Tagger()
-
-    # 形態素解析済みリスト
-    mecab_list = [line.split() for line in mecab.parse(
-        input_text).replace(",", " ").split("\n") if not (line == 'EOS' or line == '')]
+    mecab_list = MeCabUse.morphological_analysis(input_text)
 
     # print(mecab_list)
 
@@ -54,20 +52,26 @@ def main(input_text):
         return False
 
     # 最後が言い切り形のときににゃを追加{
-    special_characters_re = re.compile(r"[!-/:-@[-`{-~「」．，。、！？ー=＝?⁉]")
+    special_characters_re = re.compile(r"^[\u3000-\u303F]+$")
     temp = output_text.replace(
-        "。", "。<<SPLIT_TAG>>").replace("、", "、<<SPLIT_TAG>>").replace("」", "」<<SPLIT_TAG>>")  # 句読点
+        "。", "。<<SPLIT_TAG>>").replace("、", "、<<SPLIT_TAG>>").replace("」", "」<<SPLIT_TAG>>")  # 句読点カッコ閉じる
     output_text = ""
-    for sentence in temp.split("<<SPLIT_TAG>>"):
-        temp_sentence = special_characters_re.sub("", sentence)  # 句読点記号を削除
-        if iikiri_check(temp_sentence):
-            # 最後の記号文字列の左ににゃを証入
-            for i, character in enumerate(reversed(sentence)):
-                if not special_characters_re.match(character):
-                    output_text += sentence[:-i]+"にゃ"+sentence[-i:]
-                    break
-        else:
-            output_text += sentence
+
+    if temp in "<<SPLIT_TAG>>":
+        # 句読点カッコ閉じるが存在する場合
+        for sentence in temp.split("<<SPLIT_TAG>>"):  # 句読点で区切る
+            temp_sentence = special_characters_re.sub("", sentence)  # 記号を削除
+            if iikiri_check(temp_sentence):
+                # 最後の記号文字列の左ににゃを挿入
+                for i, character in enumerate(reversed(sentence)):
+                    if not special_characters_re.match(character):
+                        output_text += sentence[:-i]+"にゃ"+sentence[-i:]
+                        break
+            else:
+                output_text += sentence
+    else:
+        # 句読点カッコ閉じるが存在しない場合
+        output_text = temp+"にゃん"
 
     return output_text
 
